@@ -4,3 +4,4 @@ test
 one
 add
 game
+CI test
