@@ -5,3 +5,4 @@ one
 add
 game
 CI test
+sun
