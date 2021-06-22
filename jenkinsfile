@@ -1,0 +1,57 @@
+
+pipeline {
+   agent any
+  
+  environment {
+
+      sonar_url = 'http://172.31.26.139:9000/'
+      sonar_username = 'admin'
+      sonar_password = 'admin'
+      nexusUrl = '172.31.26.139:8081'
+      artifact_version = '0.0.1'
+
+ }
+
+   tools {
+      // Install the Maven version configured as "M3" and add it to the path.
+	  jdk 'java8'
+      maven "Maven3.3.9"
+   }
+   
+   stages
+   {
+   stage('git clone') {
+         steps {
+            // Get some code from a GitHub repository
+            git 'https://github.com/snehitha-reddy/Game.git'
+        }
+        
+        }
+	stage ('Compile and Build') {
+         steps {
+           sh '''
+           mvn clean install -U  -Dmaven.test.skip=true 
+           '''
+         }
+	}
+	
+	
+	   stage ('Docker Build') {
+         steps {
+           sh '''
+	   aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 781939683518.dkr.ecr.us-east-2.amazonaws.com
+          docker build -t 781939683518.dkr.ecr.us-east-2.amazonaws.com/docker:latest
+	  
+           '''
+         }
+	}
+	   stage ('Docker image publish to ECR') {
+         steps {
+           sh '''
+	  docker push 781939683518.dkr.ecr.us-east-2.amazonaws.com/docker:latest
+	  
+           '''
+         }
+	}
+  }
+ }
