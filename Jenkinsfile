@@ -68,7 +68,7 @@ pipeline {
 	   stage ('Docker image publish to ECR') {
          steps {
            sh '''
-	  docker push 781939683518.dkr.ecr.us-east-2.amazonaws.com/docker:latest
+	  docker push 781939683518.dkr.ecr.us-east-2.amazonaws.com/docker:latest . 
 	  
            '''
          }
