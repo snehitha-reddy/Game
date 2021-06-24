@@ -58,7 +58,7 @@ pipeline {
             // withCredentials([usernamePassword(credentialsId: 'JenkinsDeploymentUser', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) 
            sh '''
 	   aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 781939683518.dkr.ecr.us-east-2.amazonaws.com
-          docker build -t 781939683518.dkr.ecr.us-east-2.amazonaws.com/docker:latest
+          docker build -t 781939683518.dkr.ecr.us-east-2.amazonaws.com/docker:latest . 
 	  
            '''
 	   }
@@ -68,7 +68,7 @@ pipeline {
 	   stage ('Docker image publish to ECR') {
          steps {
            sh '''
-	  docker push 781939683518.dkr.ecr.us-east-2.amazonaws.com/docker:latest . 
+	  docker push 781939683518.dkr.ecr.us-east-2.amazonaws.com/docker:latest
 	  
            '''
          }
