@@ -45,20 +45,11 @@ pipeline {
       }
 	stage ('Publishing Artifact') {
 	steps {
-	nexusArtifactUploader artifacts: [[artifactId:'gameoflife', classifier: '', file: '/var/lib/jenkins/workspace/pipeline-test/gameoflife-build/target/gameoflife-build-1.0-SNAPSHOT.jar', type:'jar', type: 'jar']], credentialsId: '6034c3f9-74dc-4a2e-b894-46957b8a75d8', groupId: 'com.wakaleo.gameoflife', nexusUrl: '172.31.26.139:8081/', nexusVersion: 'nexus3', protocol: 'http', repository: 'hold', version: '4.0.0'
+	nexusArtifactUploader artifacts: [[artifactId:'gameoflife', classifier: '', file: '/var/lib/jenkins/workspace/final/gameoflife-build/target/gameoflife-build-1.0-SNAPSHOT.jar', type:'jar', type: 'jar']], credentialsId: '6034c3f9-74dc-4a2e-b894-46957b8a75d8', groupId: 'com.wakaleo.gameoflife', nexusUrl: '172.31.26.139:8081/', nexusVersion: 'nexus3', protocol: 'http', repository: 'hold', version: '4.0.0'
            archiveArtifacts '**/*.jar'
 	
 	
 	}
-	}
-	   stage ('Docker Build') {
-         steps {
-           sh '''
-	   aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 781939683518.dkr.ecr.us-east-2.amazonaws.com
-          docker build -t 781939683518.dkr.ecr.us-east-2.amazonaws.com/docker:latest
-	  
-           '''
-         }
 	}
 	   stage ('Docker image publish to ECR') {
          steps {
@@ -66,6 +57,8 @@ pipeline {
 	  docker push 781939683518.dkr.ecr.us-east-2.amazonaws.com/docker:latest
 	  
            '''
+         }
+	}
          }
 	}
   }
