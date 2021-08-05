@@ -52,26 +52,34 @@ pipeline {
 //	}
 //	}
 	   
-/*	     stage ('Docker Build') {
-         steps {
-	 withAWS(credentials:'jenkins'){
-            // withCredentials([usernamePassword(credentialsId: 'JenkinsDeploymentUser', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) 
-           sh '''
-	   aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 781939683518.dkr.ecr.us-east-2.amazonaws.com
-          docker build -t 781939683518.dkr.ecr.us-east-2.amazonaws.com/docker:latest . 
-	  
-           '''
-	   }
-         }
-	} 
-	   
-	   stage ('Docker image publish to ECR') {
-         steps {
-           sh '''
-	  docker push 781939683518.dkr.ecr.us-east-2.amazonaws.com/docker:latest
-	  
-           '''
-         }
-	} */
+stage ('Build Docker Image'){
+        steps {
+          sh '''
+          cd ${WORKSPACE}
+          docker build -t gcr.io/consummate-gift-319013/test .
+          '''
+        }
+      }
+      stage ('Publish Docker Image'){
+        steps {
+          sh '''
+          docker push gcr.io/consummate-gift-319013/test
+          '''
+        }
+      }
+ 
+      stage ('Deploy to kubernetes'){
+        steps{
+          script {
+
+            sh "kubectl config use-context gke_consummate-gift-319013_us-central1-c_demo"
+		       // sh "export PATH=/home/jenkins/:$PATH"
+			      sh "cd ${WORKSPACE}"
+		  	    //  sh "kubectl delete -f '${WORKSPACE}'/kube/deployment.yml"
+			      sh "kubectl create -f '${WORKSPACE}'/kube/service.yml"
+			      sh "kubectl create -f '${WORKSPACE}'/kube/deployment.yml"
+
+            }
+       }
          }
 	}
